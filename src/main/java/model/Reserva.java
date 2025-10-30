@@ -37,7 +37,7 @@ public class Reserva {
 	@Column(name = "data_checkout", nullable = false)
 	private LocalDateTime dataCheckout;
 	
-	@Column(name = "data_checkout", nullable = false)
+	@Column(name = "status", nullable = false)
 	private Status status;
 
 
