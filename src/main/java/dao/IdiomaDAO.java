@@ -3,17 +3,19 @@ package dao;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import model.FaturaExtra;
+import model.Idioma;
 
-public class FaturaExtraDAO {
+
+public class IdiomaDAO {
+
 	
 	EntityManagerFactory emf = Persistence.createEntityManagerFactory("persistenciaPU");
 
-	public void inserirNovaPessoa (FaturaExtra faturaExtra) {
+	public void inserirNovaPessoa (Idioma idioma) {
 		
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
-		em.persist(faturaExtra);
+		em.persist(idioma);
 		em.getTransaction().commit();
 		em.close();
 
