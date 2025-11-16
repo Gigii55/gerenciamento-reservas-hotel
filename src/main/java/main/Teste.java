@@ -1,21 +1,13 @@
 package main;
 
-import dao.HospedeDAO;
-import dao.PessoaDAO;
-import model.Hospede;
-
+import dao.AtendenteDAO;
 
 public class Teste {
 
     public static void main(String[] args) {
 
-       
-        HospedeDAO hospede = new HospedeDAO();
-        Hospede NH = new Hospede();
-        NH.setCpf("2131323123");
-       
-        hospede.inserirNovaPessoa(NH);
-     
+   AtendenteDAO dao = new AtendenteDAO();
+   dao.inserirAtendente("Maria", "123.456.789.-09", "44 991234567", "Maria@gmail.com");
         
     }
 }

@@ -12,7 +12,7 @@ import javax.persistence.Table;
 @Entity
 @Table (name = "pessoa")
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class Pessoa {
+public class Pessoa {
 
 	@Id
 	@GeneratedValue (strategy = GenerationType.IDENTITY)
