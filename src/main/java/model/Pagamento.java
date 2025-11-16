@@ -1,11 +1,13 @@
 package model;
 
-import java.sql.Date;
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -21,6 +23,18 @@ public class Pagamento {
 	private Date dataPagamento;
 	
 	private TipoPagamento tipoPagamento;
+	
+	@ManyToOne 
+    @JoinColumn(name = "id_hospede") 
+	private Hospede hospede;
+
+	public Hospede getHospede() {
+		return hospede;
+	}
+
+	public void setHospede(Hospede hospede) {
+		this.hospede = hospede;
+	}
 
 	public StatusPagamento getStatus() {
 		return status;

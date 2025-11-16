@@ -16,6 +16,14 @@ public class Idioma {
 	@GeneratedValue (strategy = GenerationType.IDENTITY)
 	private long id;
 	
+	public String getNome() {
+		return nome;
+	}
+
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+
 	@Column(nullable = false, length = 100, name ="nome_idioma")
 	private String nome;
 

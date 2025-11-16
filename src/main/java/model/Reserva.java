@@ -1,7 +1,8 @@
 package model;
 
-import java.sql.Date;
+
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,16 +27,30 @@ public class Reserva {
 	@JoinColumn (name = "id_atendente")
 	private Atendente atendente;
 	
+	
+	@ManyToOne
+    @JoinColumn (name = "id_hospede")
+	private Hospede hospede;
+	
 	@Column(nullable = false, length = 100, unique = true, name ="data_reserva")
+	public Hospede getHospede() {
+		return hospede;
+	}
+
+
+	public void setHospede(Hospede hospede) {
+		this.hospede = hospede;
+	}
+
+
 	private Date dataReserva;
 	
-	LocalDateTime agora = LocalDateTime.now();
 	
 	@Column(name = "data_checkin", nullable = false)
-	private LocalDateTime dataCheckin;
+	private Date dataCheckin;
 	
 	@Column(name = "data_checkout", nullable = false)
-	private LocalDateTime dataCheckout;
+	private Date dataCheckout;
 	
 	@Column(name = "status", nullable = false)
 	private Status status;
@@ -61,22 +76,22 @@ public class Reserva {
 	}
 
 
-	public LocalDateTime getDataCheckin() {
+	public Date getDataCheckin() {
 		return dataCheckin;
 	}
 
 
-	public void setDataCheckin(LocalDateTime dataCheckin) {
+	public void setDataCheckin(Date dataCheckin) {
 		this.dataCheckin = dataCheckin;
 	}
 
 
-	public LocalDateTime getDataCheckout() {
+	public Date getDataCheckout() {
 		return dataCheckout;
 	}
 
 
-	public void setDataCheckout(LocalDateTime dataCheckout) {
+	public void setDataCheckout(Date dataCheckout) {
 		this.dataCheckout = dataCheckout;
 	}
 
