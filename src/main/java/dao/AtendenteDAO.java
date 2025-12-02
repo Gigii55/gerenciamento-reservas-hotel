@@ -1,33 +1,34 @@
 package dao;
 
+import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 
 import model.Atendente;
 
+public class AtendenteDAO extends MetodosGenericosDAO <Atendente>{
 
-
-public class AtendenteDAO {
-
-	EntityManagerFactory emf = Persistence.createEntityManagerFactory("persistenciaPU");
-
-	public void inserirAtendente (String nome, String cpf, String telefone, String email) {
-		
-		Atendente atendente = new Atendente();
-		
-		atendente.setNome(nome);
-		atendente.setCpf(cpf);
-		atendente.setTelefone(telefone);
-		atendente.setEmail(email);
-		
-		EntityManager em = emf.createEntityManager();
-		em.getTransaction().begin();
-		em.persist(atendente);
-		em.getTransaction().commit();
-		em.close();
-		
-		
+	public AtendenteDAO() {
+		super(Atendente.class);
 	}
+
+
+    public List<Atendente> buscarPorNome(String nomeBuscado) {
+        
+        EntityManager em = emf.createEntityManager();
+        
+        String jpql = "SELECT a FROM Atendente a WHERE a.nome LIKE :nome";
+        
+        TypedQuery<Atendente> query = em.createQuery(jpql, Atendente.class);
+        
+        query.setParameter("nome", "%" + nomeBuscado + "%");
+        
+        List<Atendente> lista = query.getResultList();
+        
+        em.close();
+        
+        return lista;
+    }
+
 }

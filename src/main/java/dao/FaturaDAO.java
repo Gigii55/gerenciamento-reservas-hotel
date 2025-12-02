@@ -1,33 +1,45 @@
 package dao;
 
-
 import java.util.Date;
-
+import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-
+import javax.persistence.TemporalType;
+import javax.persistence.TypedQuery;
 import model.Fatura;
-import model.StatusPagamento;
+import model.Reserva;
+import model.Status;
 
-
-public class FaturaDAO {
+public class FaturaDAO extends MetodosGenericosDAO<Fatura>{
 	
-	EntityManagerFactory emf = Persistence.createEntityManagerFactory("persistenciaPU");
+	public FaturaDAO() {
+		super(Fatura.class);
+		
+	}
 
-	public void adicionarFatura (double valorTotal, double desconto, StatusPagamento statusPagamento, Date dataFechamento) {
-		
-		Fatura fatura = new Fatura ();
-		fatura.setValorTotal(valorTotal);
-		fatura.setDesconto(desconto);
-		fatura.setStatusPagamento(statusPagamento);
-		fatura.setDataFechamento(new Date());
-		
-		EntityManager em = emf.createEntityManager();
-		em.getTransaction().begin();
-		em.persist(fatura);
-		em.getTransaction().commit();
-		em.close();
-		
+	public List<Reserva> buscarPorDataFechamento(Date dataBuscada) {
+	    
+	    EntityManager em = emf.createEntityManager();
+	    
+	    String jpql = "SELECT f FROM Fatura f WHERE f.data_fechamento = :dataBuscada";
+	    TypedQuery<Reserva> query = em.createQuery(jpql, Reserva.class);
+	    query.setParameter("dataBuscada", dataBuscada, TemporalType.DATE);
+	   
+	    List<Reserva> lista = query.getResultList(); 
+	   
+	    em.close();
+	    
+	    return lista;
+	}
+	
+	public List<Fatura> buscarPorStatus(Status statusBuscado) {
+	    
+	    EntityManager em = emf.createEntityManager();
+	    	  
+	    String jpql = "SELECT f FROM Fatura f WHERE f.statusPagamento = :status";  
+	    TypedQuery<Fatura> query = em.createQuery(jpql, Fatura.class);
+	    query.setParameter("status", statusBuscado);	  
+	    List<Fatura> lista = query.getResultList();
+	    em.close();	    	  
+	    return lista;
 	}
 }

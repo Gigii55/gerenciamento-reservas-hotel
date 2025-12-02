@@ -2,41 +2,56 @@ package dao;
 
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.TemporalType;
+import javax.persistence.TypedQuery;
+
+import model.Fatura;
 import model.Hospede;
 import model.Pagamento;
+import model.Reserva;
 import model.StatusPagamento;
 import model.TipoPagamento;
 
 
-public class PagamentoDAO {
+public class PagamentoDAO extends MetodosGenericosDAO<Pagamento> {
 
-	EntityManagerFactory emf = Persistence.createEntityManagerFactory("persistenciaPU");
+	public PagamentoDAO() {
+		super(Pagamento.class);
+	}
+	
+	public List<Reserva> buscarPorDataPagamento(Date dataBuscada) {
+	    
+	    EntityManager em = emf.createEntityManager();
+	    
+	    String jpql = "SELECT p FROM Pagamento p WHERE p.dataPagamento = :dataBuscada";
+	    TypedQuery<Reserva> query = em.createQuery(jpql, Reserva.class);
+	    query.setParameter("dataBuscada", dataBuscada, TemporalType.DATE);
+	   
+	    List<Reserva> lista = query.getResultList(); 
+	   
+	    em.close();
+	    
+	    return lista;
+	}
 
-	public void inserirPagamento(Hospede idHospede, StatusPagamento Statuspagamento, Date dataPagamento, TipoPagamento tipoPagamento) {
+	public List<Pagamento> buscarPorIdHospede(Long idHospede) {
 		
 		EntityManager em = emf.createEntityManager();
 		
-		Pagamento pagamento = new Pagamento ();
+		String jpql = "SELECT p FROM Pagamento p WHERE p.hospede.id = :id";
 		
-		Hospede hospede = em.find(Hospede.class, idHospede);
-		
-		pagamento.setHospede(hospede);
-		pagamento.setStatus(Statuspagamento);
-		pagamento.setDataPagamento(dataPagamento);
-		pagamento.setTipoPagamento(tipoPagamento);
-		
-		
-		em.getTransaction().begin();
-		em.persist(pagamento);
-		em.getTransaction().commit();
-		em.close();
-		
+		TypedQuery<Pagamento> query = em.createQuery(jpql, Pagamento.class);
+		query.setParameter("id", idHospede);
 	
-		
+		List<Pagamento> lista = query.getResultList();
+	
+		em.close();
+	
+		return lista;
 	}
-
 }
