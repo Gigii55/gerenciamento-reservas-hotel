@@ -21,6 +21,7 @@ import model.TipoPagamento;
 public class PagamentoDAO extends MetodosGenericosDAO<Pagamento> {
 
 	public PagamentoDAO() {
+		
 		super(Pagamento.class);
 	}
 	
@@ -43,10 +44,10 @@ public class PagamentoDAO extends MetodosGenericosDAO<Pagamento> {
 		
 		EntityManager em = emf.createEntityManager();
 		
-		String jpql = "SELECT p FROM Pagamento p WHERE p.hospede.id = :id";
+		String jpql = "SELECT p FROM Pagamento p WHERE p.id_hospede = :id_hospede";
 		
 		TypedQuery<Pagamento> query = em.createQuery(jpql, Pagamento.class);
-		query.setParameter("id", idHospede);
+		query.setParameter("id_hospede", idHospede);
 	
 		List<Pagamento> lista = query.getResultList();
 	
@@ -54,4 +55,19 @@ public class PagamentoDAO extends MetodosGenericosDAO<Pagamento> {
 	
 		return lista;
 	}
+	
+	public List<Pagamento> buscarPorStatus(StatusPagamento statusBuscado) {
+        
+        EntityManager em = emf.createEntityManager();
+        
+       
+        String jpql = "SELECT p FROM Pagamento p WHERE p.status = :status";
+        
+        TypedQuery<Pagamento> query = em.createQuery(jpql, Pagamento.class);
+        query.setParameter("status", statusBuscado);            
+        List<Pagamento> lista = query.getResultList();     
+        em.close();
+        
+        return lista;
+    }
 }

@@ -9,6 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -18,6 +20,12 @@ public class Fatura {
 	@Id
 	@GeneratedValue (strategy = GenerationType.IDENTITY)
 	private long id;
+	
+
+
+	@ManyToOne
+    @JoinColumn(name = "id_hospede") 
+    private Hospede hospede;
 	
 	@Column(nullable = false, length = 100, name ="valorTotal")
 	private double valorTotal;
@@ -75,4 +83,14 @@ public class Fatura {
 	public long getId() {
 		return id;
 	}
+	
+	public Hospede getHospede() {
+		return hospede;
+	}
+
+
+	public void setHospede(Hospede hospede) {
+		this.hospede = hospede;
+	}
+
 }

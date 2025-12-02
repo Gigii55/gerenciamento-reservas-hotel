@@ -6,5 +6,6 @@ public class IdiomaDAO extends MetodosGenericosDAO<Idioma> {
 	public IdiomaDAO() {
 		super(Idioma.class);
 	}
-
+	
+	
 }

@@ -35,9 +35,9 @@ public class FaturaDAO extends MetodosGenericosDAO<Fatura>{
 	    
 	    EntityManager em = emf.createEntityManager();
 	    	  
-	    String jpql = "SELECT f FROM Fatura f WHERE f.statusPagamento = :status";  
+	    String jpql = "SELECT f FROM Fatura f WHERE f.status_pagamento = :status_pagamento";  
 	    TypedQuery<Fatura> query = em.createQuery(jpql, Fatura.class);
-	    query.setParameter("status", statusBuscado);	  
+	    query.setParameter("status_pagamento", statusBuscado);	  
 	    List<Fatura> lista = query.getResultList();
 	    em.close();	    	  
 	    return lista;
