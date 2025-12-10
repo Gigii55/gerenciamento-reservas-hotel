@@ -31,4 +31,17 @@ public class HospedeDAO extends MetodosGenericosDAO<Hospede>{
 	        return lista;
 	    }
 
+	  public boolean existeCpf(String cpf) {
+	        
+	        EntityManager em = emf.createEntityManager();
+	        
+	        String jpql = "SELECT COUNT(h) FROM Hospede h WHERE h.cpf = :cpf";
+	        TypedQuery<Long> query = em.createQuery(jpql, Long.class);
+	        query.setParameter("cpf", cpf);
+	        
+	        Long contagem = query.getSingleResult();
+	        em.close();
+	        
+	        return contagem > 0;
+	    }
 }

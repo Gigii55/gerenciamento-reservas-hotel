@@ -36,7 +36,7 @@ public class Fatura {
 	@Column(nullable = false, length = 100, name ="status_pagamento")
 	private StatusPagamento statusPagamento;
 	
-	@Column(nullable = false, length = 100, name ="data_fechamento")
+	@Column(nullable = true, length = 100, name ="data_fechamento")
 	private Date dataFechamento;
 	
 

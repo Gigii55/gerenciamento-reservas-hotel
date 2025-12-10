@@ -1,7 +1,5 @@
 package model;
 
-
-import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -27,24 +25,16 @@ public class Reserva {
 	@JoinColumn (name = "id_atendente")
 	private Atendente atendente;
 	
-	
 	@ManyToOne
     @JoinColumn (name = "id_hospede")
 	private Hospede hospede;
 	
-	@Column(nullable = false, length = 100, unique = true, name ="data_reserva")
-	public Hospede getHospede() {
-		return hospede;
-	}
-
-
-	public void setHospede(Hospede hospede) {
-		this.hospede = hospede;
-	}
-
-
-	private Date dataReserva;
+	@ManyToOne
+    @JoinColumn(name = "id_quarto", nullable = false)
+    private Quarto quarto;
 	
+	@Column(nullable = false, length = 100, unique = true, name ="data_reserva")
+	private Date dataReserva;
 	
 	@Column(name = "data_checkin", nullable = false)
 	private Date dataCheckin;
@@ -111,8 +101,23 @@ public class Reserva {
 	}
 	
 	
+	public Quarto getQuarto() {
+		return quarto;
+	}
+
+
+	public void setQuarto(Quarto quarto) {
+		this.quarto = quarto;
+	}
+
 	
-	
+	public void setHospede(Hospede hospede) {
+		this.hospede = hospede;
+	}
+
+	public Hospede getHospede() {
+		return hospede;
+	}
 }
 
 
