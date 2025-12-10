@@ -13,10 +13,11 @@ public class HotelService {
     private QuartoDAO quartoDAO = new QuartoDAO();
     private FaturaDAO faturaDAO = new FaturaDAO();
     private FaturaExtraDAO faturaExtraDAO = new FaturaExtraDAO();
+    
+    // --- OBRIGATÓRIO: O DAO DE PAGAMENTO TEM QUE ESTAR AQUI ---
+    private PagamentoDAO pagamentoDAO = new PagamentoDAO(); 
 
-   
     public void realizarCheckIn(Long idReserva) {
-        
         Reserva reserva = reservaDAO.buscarPorId(idReserva);
         
         if (reserva == null) {
@@ -25,85 +26,109 @@ public class HotelService {
         }
 
         reserva.setStatus(Status.OCUPADO);
-        reservaDAO.adicionar(reserva); 
-
         Quarto quarto = reserva.getQuarto();
         quarto.setStatus(Status.OCUPADO);
-        quartoDAO.adicionar(quarto); 
+        quartoDAO.adicionar(quarto);
 
-        // 3. Abre a Fatura (Conta do Hóspede)
-        
         Fatura novaFatura = new Fatura();
         novaFatura.setHospede(reserva.getHospede());
-        novaFatura.setValorTotal(0.0); 
+        novaFatura.setValorTotal(0.0);
         novaFatura.setDesconto(0.0);
         novaFatura.setStatusPagamento(StatusPagamento.PENDENTE);
         novaFatura.setDataFechamento(null);
         
-        faturaDAO.adicionar(novaFatura);
+        novaFatura = faturaDAO.adicionar(novaFatura);
 
-        System.out.println("CHECK-IN REALIZADO!");
+        reserva.setFatura(novaFatura);
+        reservaDAO.adicionar(reserva);
 
+        System.out.println("CHECK-IN REALIZADO! Quarto " + quarto.getNumeroQuarto() + " ocupado.");
     }
 
-    // --- PROCESSO DE CHECK-OUT ---
-    public void realizarCheckOut(Long idReserva, Long idFatura) {
+    public void realizarCheckOut(Long idReserva, TipoPagamento tipoPagamento) {
         
+        System.out.println(">> Iniciando processo de Check-out..."); // LOG DE DEBUG
+
         Reserva reserva = reservaDAO.buscarPorId(idReserva);
-        Fatura fatura = faturaDAO.buscarPorId(idFatura);
+        
+        if (reserva == null) {
+            System.out.println("Reserva não encontrada.");
+            return;
+        }
+
+        Fatura fatura = reserva.getFatura();
+        if (fatura == null) {
+            System.out.println("ERRO CRÍTICO: Reserva sem fatura vinculada.");
+            return;
+        }
+
         Quarto quarto = reserva.getQuarto();
 
-        
+        // 1. CÁLCULOS
         long diferencaMs = reserva.getDataCheckout().getTime() - reserva.getDataCheckin().getTime();
         long dias = TimeUnit.DAYS.convert(diferencaMs, TimeUnit.MILLISECONDS);
-    
         if (dias == 0) dias = 1;
 
         double totalDiarias = dias * quarto.getValorDiaria();
-        System.out.println("Total Diárias (" + dias + " dias): R$ " + totalDiarias);
-
-        
         double totalExtras = 0.0;
-        
         List<FaturaExtra> extras = faturaExtraDAO.listarPorFatura(fatura.getId());
-        
         for (FaturaExtra item : extras) {
             totalExtras += item.getValor();
         }
-        System.out.println("Total Extras: R$ " + totalExtras);
 
         double valorFinal = totalDiarias + totalExtras;
+
+        System.out.println("\n--- RESUMO DA CONTA ---");
+        System.out.println("Diárias (" + dias + " dias): R$ " + totalDiarias);
+        System.out.println("Consumo Extra: R$ " + totalExtras);
+        System.out.println("TOTAL A PAGAR: R$ " + valorFinal);
+        System.out.println("-----------------------");
+
+        // 2. REGISTRAR O PAGAMENTO
+        Pagamento novoPagamento = new Pagamento();
+        novoPagamento.setHospede(reserva.getHospede());
+        novoPagamento.setStatus(StatusPagamento.PAGO);
+        novoPagamento.setTipoPagamento(tipoPagamento);
+        novoPagamento.setDataPagamento(new Date());
         
+        // TENTA SALVAR NO BANCO
+        try {
+            pagamentoDAO.adicionar(novoPagamento);
+            System.out.println(">> Pagamento salvo no banco com ID: " + novoPagamento.getId());
+        } catch (Exception e) {
+            System.out.println("ERRO AO SALVAR PAGAMENTO: " + e.getMessage());
+        }
+
+        // 3. FECHAR A FATURA
         fatura.setValorTotal(valorFinal);
         fatura.setStatusPagamento(StatusPagamento.PAGO);
         fatura.setDataFechamento(new Date());
         faturaDAO.adicionar(fatura);
 
-      
+        // 4. LIBERAR QUARTO E RESERVA
         reserva.setStatus(Status.DISPONÍVEL);
         reservaDAO.adicionar(reserva);
 
         quarto.setStatus(Status.AGUARDANDO_LIMPEZA);
         quartoDAO.adicionar(quarto);
 
-        System.out.println("CHECK-OUT REALIZADO!");
-        
-        
+        System.out.println("✅ CHECK-OUT CONCLUÍDO!");
     }
     
-    public void bloquearQuartoParaManutencao(Long idQuarto) {
+    public void liberarQuartoAposLimpeza(Long idQuarto) {
         Quarto quarto = quartoDAO.buscarPorId(idQuarto);
         
-        if (quarto != null) {
-            
-            if (quarto.getStatus() == Status.OCUPADO) {
-                System.out.println("Erro: Não pode bloquear quarto ocupado!");
-                return;
-            }
-            
-            quarto.setStatus(Status.EM_MANUTENÇÃO);
+        if (quarto == null) {
+            System.out.println("Quarto não encontrado.");
+            return;
+        }
+
+        if (quarto.getStatus() == Status.AGUARDANDO_LIMPEZA) {
+            quarto.setStatus(Status.DISPONÍVEL);
             quartoDAO.adicionar(quarto);
-            System.out.println("Quarto " + quarto.getNumeroQuarto() + " bloqueado para manutenção.");
+            System.out.println("✅ Quarto " + quarto.getNumeroQuarto() + " limpo e disponível para novas reservas!");
+        } else {
+            System.out.println("⚠️ Este quarto não está aguardando limpeza. Status atual: " + quarto.getStatus());
         }
     }
 }

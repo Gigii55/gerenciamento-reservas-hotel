@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 
@@ -33,7 +34,12 @@ public class Reserva {
     @JoinColumn(name = "id_quarto", nullable = false)
     private Quarto quarto;
 	
-	@Column(nullable = false, length = 100, unique = true, name ="data_reserva")
+	@OneToOne
+    @JoinColumn(name = "id_fatura") 
+    private Fatura fatura;
+		
+
+	@Column(nullable = false, length = 100, name ="data_reserva")
 	private Date dataReserva;
 	
 	@Column(name = "data_checkin", nullable = false)
@@ -117,6 +123,15 @@ public class Reserva {
 
 	public Hospede getHospede() {
 		return hospede;
+	}
+	
+	public Fatura getFatura() {
+		return fatura;
+	}
+
+
+	public void setFatura(Fatura fatura) {
+		this.fatura = fatura;
 	}
 }
 

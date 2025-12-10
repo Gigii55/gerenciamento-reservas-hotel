@@ -69,27 +69,27 @@ public abstract class MetodosGenericosDAO<T> {
         }
     }
     
-    public void adicionar(T entidade) {
-    	
+    public T adicionar(T entidade) {
         EntityManager em = emf.createEntityManager();
-        
         try {
-        	
             em.getTransaction().begin();
-            em.merge(entidade);
+            
+          
+            T entidadeSalva = em.merge(entidade); 
+            
             em.getTransaction().commit();
             
+          
+            return entidadeSalva; 
+            
         } catch (Exception e) {
-        	
             e.printStackTrace();
-         
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            
+            return null;
         } finally {
-        
-                em.close();         
+            em.close();
         }
     }
 
