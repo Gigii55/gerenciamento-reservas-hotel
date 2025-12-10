@@ -1,4 +1,5 @@
 package dao;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -14,34 +15,50 @@ public class HospedeDAO extends MetodosGenericosDAO<Hospede>{
 
 	}
 	
-	  public List<Hospede> buscarPorNome(String nomeBuscado) {
-	        
-	        EntityManager em = emf.createEntityManager();
-	        
+	public List<Hospede> buscarPorNome(String nomeBuscado) {
+		
+	    EntityManager em = emf.createEntityManager();
+	    
+	    try {
+	    	
 	        String jpql = "SELECT h FROM Hospede h WHERE h.nome LIKE :nome";
-	        
 	        TypedQuery<Hospede> query = em.createQuery(jpql, Hospede.class);
-	        
 	        query.setParameter("nome", "%" + nomeBuscado + "%");
 	        
-	        List<Hospede> lista = query.getResultList();
+	        return query.getResultList();
 	        
-	        em.close();
+	    } catch (Exception e) {
+	    	
+	        e.printStackTrace();
+	        return new ArrayList<>();
 	        
-	        return lista;
+	    } finally {
+	            em.close();
+	        
 	    }
+	}
 
-	  public boolean existeCpf(String cpf) {
-	        
-	        EntityManager em = emf.createEntityManager();
-	        
+	public boolean existeCpf(String cpf) {
+		
+	    EntityManager em = emf.createEntityManager();
+	    
+	    try {
+	    	
 	        String jpql = "SELECT COUNT(h) FROM Hospede h WHERE h.cpf = :cpf";
 	        TypedQuery<Long> query = em.createQuery(jpql, Long.class);
 	        query.setParameter("cpf", cpf);
 	        
 	        Long contagem = query.getSingleResult();
-	        em.close();
-	        
 	        return contagem > 0;
+	        
+	    } catch (Exception e) {
+	    	
+	        e.printStackTrace();
+	        return false;
+	        
+	    } finally {
+	            em.close();
+	        
 	    }
+	}
 }
